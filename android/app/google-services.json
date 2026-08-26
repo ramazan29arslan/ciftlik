@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "581823059784",
+    "project_id": "ciftlik-yonetim-1",
+    "storage_bucket": "ciftlik-yonetim-1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:581823059784:android:9403ab0af510e63b15857d",
+        "android_client_info": {
+          "package_name": "com.ciftlik.ciftlik_yonetim"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "581823059784-ike3bs3k2n6m1f8rrp0g6eiakeca1f2b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDf4w2KgKMy4eaOWbzXKVAJnUHgbt1xYaw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "581823059784-ike3bs3k2n6m1f8rrp0g6eiakeca1f2b.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "581823059784-osue0d6d2c7e8k16l07ib812smig64c8.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ciftlik.ciftlikYonetim"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,12 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Çiftlik veya kişisel alan — kimliği doğrulanmış kullanıcı kendi alanına veya üyesi olduğu çiftliğe yazar
+    match /farms/{farmId}/{allPaths=**} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null
+        && (farmId == request.auth.uid
+            || request.auth.uid != null);
+    }
+  }
+}

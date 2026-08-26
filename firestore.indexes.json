@@ -1,0 +1,29 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "saleTransfers",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "sellerUserId", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "saleTransfers",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "buyerEmail", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "saleTransfers",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "entityId", "order": "ASCENDING" },
+        { "fieldPath": "status", "order": "ASCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
