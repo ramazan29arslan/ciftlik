@@ -60,6 +60,12 @@ class UpdateService {
   /// Yamayı indirir. İndirme bittiğinde yama *bir sonraki açılışta* devreye
   /// girer — bu çağrı çalışan uygulamayı değiştirmez.
   Future<void> download() => _updater.update();
+
+  /// O an çalışan yamanın numarası. Hiç yama uygulanmadıysa null döner.
+  Future<int?> currentPatchNumber() async {
+    if (!_updater.isAvailable) return null;
+    return (await _updater.readCurrentPatch())?.number;
+  }
 }
 
 final updateServiceProvider = Provider<UpdateService>((ref) => UpdateService());

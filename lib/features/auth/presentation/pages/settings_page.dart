@@ -5,6 +5,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/di/settings_provider.dart';
 import '../../../../core/di/providers.dart';
+import '../../../../core/services/update_service.dart';
 import '../../../../shared/widgets/app_card.dart';
 import '../../data/repositories/auth_repository.dart';
 import '../providers/auth_provider.dart';
@@ -305,6 +306,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 ],
               ),
             ),
+            const SizedBox(height: 24),
+            const _PatchFooter(),
             const SizedBox(height: 32),
           ],
         ),
@@ -475,6 +478,33 @@ class _SummaryRow extends StatelessWidget {
             style: const TextStyle(
                 fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textPrimary)),
       ],
+    );
+  }
+}
+
+/// Ayarlar sayfasinin altinda o an calisan OTA yamasini gosterir.
+class _PatchFooter extends ConsumerWidget {
+  const _PatchFooter();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return FutureBuilder<int?>(
+      future: ref.read(updateServiceProvider).currentPatchNumber(),
+      builder: (context, snapshot) {
+        final number = snapshot.data;
+        final label = number == null
+            ? 'Güncelleme: yama yüklü değil'
+            : 'Güncelleme: yama #$number yüklü';
+        return Center(
+          child: Text(
+            label,
+            style: const TextStyle(
+              fontSize: 12,
+              color: AppColors.textTertiary,
+            ),
+          ),
+        );
+      },
     );
   }
 }
