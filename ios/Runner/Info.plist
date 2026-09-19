@@ -24,12 +24,20 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Hava durumu için konumunuz kullanılacak</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Hayvan, araç ve yapı fotoğrafı çekmek için kamera erişimi gereklidir.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Hava durumu için konumunuz kullanılacak</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Hava durumu için konumunuz kullanılacak</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Çekilen fotoğrafları galeriye kaydetmek için izin gereklidir.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Hayvan, araç ve yapı fotoğrafları için galeri erişimi gereklidir.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -70,11 +78,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Hayvan, araç ve yapı fotoğrafları için galeri erişimi gereklidir.</string>
-	<key>NSCameraUsageDescription</key>
-	<string>Hayvan, araç ve yapı fotoğrafı çekmek için kamera erişimi gereklidir.</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Çekilen fotoğrafları galeriye kaydetmek için izin gereklidir.</string>
 </dict>
 </plist>

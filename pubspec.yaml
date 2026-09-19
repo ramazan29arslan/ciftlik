@@ -88,3 +88,4 @@ flutter:
     - assets/images/
     - assets/icons/
     - assets/animations/
+    - shorebird.yaml
