@@ -77,7 +77,12 @@ class CiftlikApp extends ConsumerWidget {
           data: MediaQuery.of(context).copyWith(
             textScaler: TextScaler.noScaling,
           ),
-          child: UpdateGate(child: child!),
+          // Bos bir alana dokunulunca klavye kapansin.
+          child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+            child: UpdateGate(child: child!),
+          ),
         );
       },
     );
