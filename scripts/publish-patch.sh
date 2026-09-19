@@ -25,8 +25,18 @@ echo "==> Yama olusturuluyor (release $RELEASE_VERSION)"
 LOG="$(mktemp -t shorebird-patch)"
 trap 'rm -f "$LOG"' EXIT
 
-yes | shorebird patch "$PLATFORM" --release-version="$RELEASE_VERSION" \
+# `yes` yerine tek seferlik girdi: `yes` sonsuza kadar yazdigi icin shorebird
+# okumayi birakinca SIGPIPE ile oluyor, pipefail bunu hata sayip `set -e`
+# betigi sessizce sonlandiriyordu.
+set +e
+printf 'y\ny\ny\n' | shorebird patch "$PLATFORM" --release-version="$RELEASE_VERSION" \
   -- --dart-define-from-file=env.json 2>&1 | tee "$LOG"
+PATCH_STATUS=${PIPESTATUS[1]}
+set -e
+if [ "$PATCH_STATUS" -ne 0 ]; then
+  echo "HATA: shorebird patch basarisiz oldu (cikis $PATCH_STATUS)." >&2
+  exit 1
+fi
 
 PATCH_NUMBER="$(grep -oE 'Published Patch [0-9]+' "$LOG" | tail -1 | grep -oE '[0-9]+' || true)"
 if [ -z "$PATCH_NUMBER" ]; then
@@ -39,10 +49,10 @@ LAST_TAG="$(git tag --list 'patch-*' --sort=-creatordate | head -1)"
 if [ -n "$LAST_TAG" ]; then
   RANGE="$LAST_TAG..HEAD"
   echo "==> Notlar toplaniyor ($RANGE)"
-  NOTES="$(git log "$RANGE" --no-merges --pretty=format:'%s')"
+  NOTES="$(git log "$RANGE" --no-merges --pretty=format:'%s' | grep -v '\[dahili\]$' || true)"
 else
   echo "==> Ilk yama: son 10 commit kullaniliyor"
-  NOTES="$(git log -n 10 --no-merges --pretty=format:'%s')"
+  NOTES="$(git log -n 10 --no-merges --pretty=format:'%s' | grep -v '\[dahili\]$' || true)"
 fi
 
 printf '%s\n' "$NOTES" | node scripts/update-notes.mjs "$PATCH_NUMBER" "$PLATFORM"
