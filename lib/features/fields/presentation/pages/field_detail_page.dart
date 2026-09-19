@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/constants/crop_catalog.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/date_utils.dart';
 import '../../../../shared/widgets/app_card.dart';
@@ -53,8 +54,8 @@ class _FieldDetailPageState extends ConsumerState<FieldDetailPage>
 
   @override
   Widget build(BuildContext context) {
-    // State'i izliyoruz; `.notifier` izlemek degisikliklerde yeniden cizim
-    // tetiklemedigi icin ekim/hasat kayitlari ancak sayfaya tekrar
+    // State'i izliyoruz; `.notifier` izlemek degisikliklerde yeniden
+    // cizim tetiklemedigi icin ekim/hasat kayitlari ancak sayfaya tekrar
     // girildiginde gorunuyordu.
     final field = ref
         .watch(fieldsNotifierProvider)
@@ -200,9 +201,18 @@ class _FieldDetailPageState extends ConsumerState<FieldDetailPage>
   // ── Ekim formu ────────────────────────────────────────────
   void _showPlantingSheet(FieldData? field) {
     if (field == null) return;
+    // cropCtrl yalnizca "Diger" secildiginde kullanilir.
     final cropCtrl  = TextEditingController();
     final notesCtrl = TextEditingController();
     DateTime selectedDate = DateTime.now();
+    String? selectedCategory;
+    String? selectedProduct;
+
+    // Formda secili olana gore kaydedilecek urun adi.
+    String effectiveCrop() =>
+        (selectedProduct == null || selectedProduct == CropCatalog.other)
+            ? cropCtrl.text.trim()
+            : selectedProduct!;
 
     showModalBottomSheet(
       context: context,
@@ -222,10 +232,45 @@ class _FieldDetailPageState extends ConsumerState<FieldDetailPage>
                 const SizedBox(height: 16),
                 const Center(child: Text('Ekim Kaydı', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700))),
                 const SizedBox(height: 20),
-                TextField(
-                  controller: cropCtrl,
-                  decoration: const InputDecoration(labelText: 'Ürün Adı *', hintText: 'Buğday, Arpa, Mısır...', prefixIcon: Icon(Icons.grass_rounded)),
+                DropdownButtonFormField<String>(
+                  initialValue: selectedCategory,
+                  isExpanded: true,
+                  decoration: const InputDecoration(labelText: 'Ürün Cinsi *', prefixIcon: Icon(Icons.category_rounded)),
+                  items: [
+                    for (final c in CropCatalog.categories)
+                      DropdownMenuItem(value: c, child: Text(c)),
+                  ],
+                  onChanged: (v) => setS(() {
+                    selectedCategory = v;
+                    // Cins degisince onceki urun secimi gecersiz kalir.
+                    selectedProduct = v == CropCatalog.other ? CropCatalog.other : null;
+                  }),
                 ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<String>(
+                  initialValue: selectedProduct,
+                  isExpanded: true,
+                  decoration: const InputDecoration(labelText: 'Ürün *', prefixIcon: Icon(Icons.grass_rounded)),
+                  items: [
+                    for (final p in CropCatalog.productsOf(selectedCategory))
+                      DropdownMenuItem(value: p, child: Text(p)),
+                  ],
+                  onChanged: selectedCategory == null
+                      ? null
+                      : (v) => setS(() => selectedProduct = v),
+                ),
+                if (selectedProduct == CropCatalog.other) ...[
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: cropCtrl,
+                    onChanged: (_) => setS(() {}),
+                    decoration: const InputDecoration(
+                      labelText: 'Ürün Adı *',
+                      hintText: 'Listede olmayan ürünü yazın',
+                      prefixIcon: Icon(Icons.edit_rounded),
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 12),
                 GestureDetector(
                   onTap: () async {
@@ -253,7 +298,7 @@ class _FieldDetailPageState extends ConsumerState<FieldDetailPage>
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(backgroundColor: AppColors.success, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
                     onPressed: () {
-                      final crop = cropCtrl.text.trim();
+                      final crop = effectiveCrop();
                       if (crop.isEmpty) return;
                       final newRecord = CropRecord(
                         id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -317,7 +362,9 @@ class _FieldDetailPageState extends ConsumerState<FieldDetailPage>
         final newItem = createStockItem(
           userId: farmId,
           name: name,
-          category: 'Hasat',
+          // Stok kaydi urunun kendi cinsiyle acilsin (Tahil, Sebze...);
+          // katalogda olmayan urunlerde genel "Hasat" basligi kalir.
+          category: CropCatalog.categoryOf(name) ?? 'Hasat',
           unit: y.unit,
           currentQuantity: y.amount,
           minimumQuantity: 0,
