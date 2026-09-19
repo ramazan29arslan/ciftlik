@@ -11,6 +11,7 @@ import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
 import 'core/router/app_router.dart';
 import 'core/di/providers.dart';
+import 'shared/widgets/update_gate.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -76,7 +77,7 @@ class CiftlikApp extends ConsumerWidget {
           data: MediaQuery.of(context).copyWith(
             textScaler: TextScaler.noScaling,
           ),
-          child: child!,
+          child: UpdateGate(child: child!),
         );
       },
     );

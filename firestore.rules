@@ -74,6 +74,14 @@ service cloud.firestore {
         && resource.data.sellerUserId == request.auth.uid;
     }
 
+    // ── OTA Yama Notlari ─────────────────────────
+    // Sadece surum notlari icerir, hassas veri yok. Giris yapmamis
+    // kullanicinin da guncelleme uyarisini gorebilmesi icin acik okuma.
+    match /appUpdates/{platform} {
+      allow read: if true;
+      allow write: if false;
+    }
+
     // Diğer tüm yollar yasak
     match /{document=**} {
       allow read, write: if false;
