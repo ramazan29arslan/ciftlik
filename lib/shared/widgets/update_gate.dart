@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/di/providers.dart';
+import '../../core/router/app_router.dart';
 import '../../core/services/update_service.dart';
 import '../../core/theme/app_colors.dart';
 
@@ -55,8 +56,13 @@ class _UpdateGateState extends ConsumerState<UpdateGate> {
   }
 
   Future<void> _promptUser(PatchNotes notes) async {
+    // MaterialApp.builder'in context'i Navigator'in ustunde kalir; diyaloglari
+    // router'in kok navigator'i uzerinden acmak zorundayiz.
+    final navContext = rootNavigatorKey.currentContext;
+    if (navContext == null) return;
+
     final shouldUpdate = await showDialog<bool>(
-      context: context,
+      context: navContext,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
         title: Row(
@@ -113,11 +119,12 @@ class _UpdateGateState extends ConsumerState<UpdateGate> {
   }
 
   Future<void> _download() async {
-    if (!mounted) return;
+    final navContext = rootNavigatorKey.currentContext;
+    if (navContext == null) return;
 
     // İndirme sırasında kapatılamayan bir ilerleme kutusu göster.
     showDialog<void>(
-      context: context,
+      context: navContext,
       barrierDismissible: false,
       builder: (context) => const AlertDialog(
         content: Row(
@@ -144,11 +151,16 @@ class _UpdateGateState extends ConsumerState<UpdateGate> {
           'sonra tekrar deneyin.';
     }
 
-    if (!mounted) return;
-    Navigator.pop(context); // ilerleme kutusunu kapat
+    rootNavigatorKey.currentState?.pop(); // ilerleme kutusunu kapat
+
+    // Context bu widget'tan değil kök navigator'dan geliyor; doğru koruma
+    // `mounted` değil, anahtarın o an canlı olup olmadığı.
+    final resultContext = rootNavigatorKey.currentContext;
+    if (resultContext == null) return;
 
     await showDialog<void>(
-      context: context,
+      // ignore: use_build_context_synchronously
+      context: resultContext,
       builder: (context) => AlertDialog(
         content: Text(message),
         actions: [
