@@ -53,7 +53,13 @@ class _FieldDetailPageState extends ConsumerState<FieldDetailPage>
 
   @override
   Widget build(BuildContext context) {
-    final field = ref.watch(fieldsNotifierProvider.notifier).getById(widget.fieldId);
+    // State'i izliyoruz; `.notifier` izlemek degisikliklerde yeniden cizim
+    // tetiklemedigi icin ekim/hasat kayitlari ancak sayfaya tekrar
+    // girildiginde gorunuyordu.
+    final field = ref
+        .watch(fieldsNotifierProvider)
+        .where((f) => f.id == widget.fieldId)
+        .firstOrNull;
 
     return Scaffold(
       backgroundColor: AppColors.background,
