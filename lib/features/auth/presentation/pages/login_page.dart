@@ -161,6 +161,74 @@ class _LoginPageState extends ConsumerState<LoginPage>
     }
   }
 
+  // ── Şifremi unuttum ───────────────────────────────────────────────────────
+  Future<void> _forgotPassword() async {
+    final resetController =
+        TextEditingController(text: _emailController.text.trim());
+    final email = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Şifremi Unuttum'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Hesabınızın e-posta adresini girin. Şifre sıfırlama bağlantısı o adrese gönderilecek.',
+              style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: resetController,
+              keyboardType: TextInputType.emailAddress,
+              autofocus: true,
+              decoration: const InputDecoration(
+                labelText: 'E-posta',
+                prefixIcon: Icon(Icons.email_outlined),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Vazgeç'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, resetController.text.trim()),
+            child: const Text('Gönder'),
+          ),
+        ],
+      ),
+    );
+    resetController.dispose();
+
+    if (email == null || email.isEmpty) return;
+    if (!email.contains('@')) {
+      setState(() => _errorMessage = 'Geçerli e-posta girin');
+      return;
+    }
+
+    setState(() { _isLoading = true; _errorMessage = null; });
+    try {
+      await ref.read(authRepositoryProvider).sendPasswordReset(email);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Şifre sıfırlama bağlantısı $email adresine gönderildi.'),
+          ),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      setState(() => _errorMessage =
+          ref.read(authRepositoryProvider).mapError(e));
+    } catch (_) {
+      setState(() =>
+          _errorMessage = 'Bağlantı gönderilemedi. Tekrar deneyin.');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
   // ── Google ile giriş/kayıt ─────────────────────────────────────────────────
   Future<void> _loginWithGoogle() async {
     setState(() { _isGoogleLoading = true; _errorMessage = null; });
@@ -363,7 +431,15 @@ class _LoginPageState extends ConsumerState<LoginPage>
               return null;
             },
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 4),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              onPressed: _isLoading ? null : _forgotPassword,
+              child: const Text('Şifremi unuttum'),
+            ),
+          ),
+          const SizedBox(height: 12),
           AppButton(
             label: 'Giriş Yap',
             onPressed: _login,
