@@ -30,6 +30,8 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Hayvan, araç ve yapı fotoğrafı çekmek için kamera erişimi gereklidir.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Hava durumu ve konum tabanlı özellikler için konumunuz kullanılacak</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Hava durumu için konumunuz kullanılacak</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
