@@ -49,3 +49,6 @@ app.*.map.json
 
 # Yerel sırlar (dart-define-from-file)
 env.json
+
+# Firebase servis hesabi anahtari (yama notlarini yazmak icin)
+serviceAccount.json
